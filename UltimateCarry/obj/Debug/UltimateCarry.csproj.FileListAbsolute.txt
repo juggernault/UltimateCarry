@@ -1,0 +1,14 @@
+C:\Users\Lexxer\Documents\Visual Studio 11\Projects\UltimateCarry\UltimateCarry\bin\Debug\UltimateCarry.exe.config
+C:\Users\Lexxer\Documents\Visual Studio 11\Projects\UltimateCarry\UltimateCarry\bin\Debug\UltimateCarry.exe
+C:\Users\Lexxer\Documents\Visual Studio 11\Projects\UltimateCarry\UltimateCarry\bin\Debug\UltimateCarry.pdb
+C:\Users\Lexxer\Documents\Visual Studio 11\Projects\UltimateCarry\UltimateCarry\bin\Debug\LeagueSharp.AppDomainManager.dll
+C:\Users\Lexxer\Documents\Visual Studio 11\Projects\UltimateCarry\UltimateCarry\bin\Debug\LeagueSharp.Common.dll
+C:\Users\Lexxer\Documents\Visual Studio 11\Projects\UltimateCarry\UltimateCarry\bin\Debug\LeagueSharp.dll
+C:\Users\Lexxer\Documents\Visual Studio 11\Projects\UltimateCarry\UltimateCarry\bin\Debug\SharpDX.Direct3D9.dll
+C:\Users\Lexxer\Documents\Visual Studio 11\Projects\UltimateCarry\UltimateCarry\bin\Debug\SharpDX.dll
+C:\Users\Lexxer\Documents\Visual Studio 11\Projects\UltimateCarry\UltimateCarry\bin\Debug\SharpDX.Toolkit.dll
+C:\Users\Lexxer\Documents\Visual Studio 11\Projects\UltimateCarry\UltimateCarry\bin\Debug\SharpDX.Toolkit.Graphics.dll
+C:\Users\Lexxer\Documents\Visual Studio 11\Projects\UltimateCarry\UltimateCarry\bin\Debug\SharpDX.Toolkit.xml
+C:\Users\Lexxer\Documents\Visual Studio 11\Projects\UltimateCarry\UltimateCarry\obj\Debug\UltimateCarry.exe
+C:\Users\Lexxer\Documents\Visual Studio 11\Projects\UltimateCarry\UltimateCarry\obj\Debug\UltimateCarry.pdb
+C:\Users\Lexxer\Documents\Visual Studio 11\Projects\UltimateCarry\UltimateCarry\obj\Debug\UltimateCarry.csprojResolveAssemblyReference.cache
