@@ -17,11 +17,13 @@ using System.Threading.Tasks;
 
 #endregion
 
+
+// G.Chat_WriteLocal(ObjectManager.Player.Spellbook.GetSpell(SpellSlot.W).SData.CastRange.ToString() );
 namespace UltimateCarry
 {
 	class Program
 	{
-		public const int Localversion = 8;
+		public const int Localversion = 10;
 
 		public static Menu Menu;
 		public static Orbwalking.Orbwalker Orbwalker;

@@ -21,15 +21,22 @@ namespace UltimateCarry
 {
 	class Zed : Champ
 	{
+		public static Obj_AI_Minion Clone_W = null;
+		public static bool Clone_W_Created = false;
+		public static bool Clone_W_Found = false;
+		public static int Clone_W_Tick = 0;
+		public static int W_Cast_Tick = 0;
 
+		public static Obj_AI_Minion Clone_R = null;
+		public static bool Clone_R_Created = false;
+		public static bool Clone_R_Found = false;
+		public static int Clone_R_Tick = 0;
+		public static int R_Cast_Tick = 0;
 
-		public static GameObject Clone = null;
-		public static int CloneTimer = 0;
-		public static int W_Casttime = 0;
-		public static int W_CheckTick = 0;
-		public static bool W_Casted = false;
-		public static int R_Casttime = 0;
-		public static int R_CheckTick = 0;
+		public static Vector3 Clone_R_nearPosition;
+
+		public static int Delay = 100;
+		public static int DelayTick = 0;
 
 		public static Spell Q;
 		public static Spell W;
@@ -41,19 +48,16 @@ namespace UltimateCarry
 		public Zed()
 		{
 			Id = "Zed";
-			GameObject.OnCreate += OnCreateObject;
-			GameObject.OnDelete += OnDeleteObject;
 			Obj_SpellMissile.OnCreate += OnSpellCast;
 
-
-			Q = new Spell(SpellSlot.Q, 925);
+			Q = new Spell(SpellSlot.Q, 900);
 			Q.SetSkillshot(0.235f, 50f, 1700, false, Prediction.SkillshotType.SkillshotLine);
 
 			W = new Spell(SpellSlot.W, 550);
 
 			E = new Spell(SpellSlot.E, 290);
 
-			R = new Spell(SpellSlot.R, 625);
+			R = new Spell(SpellSlot.R, 600);
 		}
 
 		private void OnSpellCast(GameObject sender, EventArgs args)
@@ -63,56 +67,60 @@ namespace UltimateCarry
 			var Name = Spell.SData.Name;
 
 			if(Unit == ObjectManager.Player.Name && Name == "ZedShadowDashMissile")
+				Clone_W_Created = true;
+			if(Unit == ObjectManager.Player.Name && Name == "ZedUltMissile")
 			{
-				W_Casted = true;
-				W_Casttime = Environment.TickCount;
+				Clone_R_Created = true;
+				Clone_R_nearPosition = ObjectManager.Player.ServerPosition;
 			}
 		}
 
-
-
-
-
-		private static void OnCreateObject(GameObject sender, EventArgs args)
-		{
-			if(sender.IsValid && sender.Name == "Shadow")
-				if(Clone == null)
-				{
-					Clone = sender;
-					CloneTimer = Environment.TickCount;
-				}
-			if(sender.IsValid && sender.Name == "Zed_Base_CloneDeath.troy")
-			{
-				Clone = null;
-				W_Casted = false;
-			}
-
-		}
-
-		private static void OnDeleteObject(GameObject sender, EventArgs args)
-		{
-		}
 
 		public override void Menu()
 		{
+			G.Menu_CreateBasicDrawMenu(true, false, true, true);
+
+			G.Menu_CreateCostumItem(t.Menu_Farm, "use_Q_Farm", "Use Q", false);
+
+			G.Menu_CreateCostumItem(t.Menu_Laneclear, "use_Q_LaneClear_Enemy", "Use Q on Enemy");
+			G.Menu_CreateCostumItem(t.Menu_Laneclear, "use_Q_LaneClear_Minion", "Use Q on Minion");
+			G.Menu_CreateCostumItem(t.Menu_Laneclear, "use_E_LaneClear_Enemy", "Use E on Enemy");
+			G.Menu_CreateCostumItem(t.Menu_Laneclear, "use_E_LaneClear_Minion", "Use E on Minion");
+
 			G.Menu_CreateCostumItem(t.Menu_Teamfight, "use_Q_Combo", "Use Q");
 			G.Menu_CreateCostumItem(t.Menu_Teamfight, "use_W_Combo", "Use W Follow");
 			G.Menu_CreateCostumItem(t.Menu_Teamfight, "use_E_Combo", "Use E");
 			G.Menu_CreateCostumItem(t.Menu_Teamfight, "use_R_Combo", "Use R");
 
 			G.Menu_CreateCostumItem(t.Menu_Harass, "use_Q_Harass", "Use Q");
-			G.Menu_CreateCostumItem(t.Menu_Harass, "use_W_Combo", "Use W no Follow");
+			G.Menu_CreateCostumItem(t.Menu_Harass, "use_W_Harass", "Use W no Follow");
 			G.Menu_CreateCostumItem(t.Menu_Harass, "use_E_Harass", "Use E");
 
-			G.Menu_CreateCostumItem(t.Menu_Killsteal, "use_R_KS", "Use R");
+			//G.Menu_CreateCostumItem(t.Menu_Killsteal, "use_R_KS", "Use R");
 
-			Program.Menu.SubMenu(t.Menu_Drawing).AddItem(new MenuItem("color_Clone", "Color Clone").SetValue(new Circle(true, System.Drawing.Color.FromArgb(255, 255, 255, 255))));
 		}
 
 		internal override void OnGameUpdate(EventArgs args)
 		{
-			//if( Clone != null && CloneTimer <= Environment.TickCount - 4000)
-			//	Clone = null;  
+
+			if(Clone_W_Created && !Clone_W_Found)
+				SearchForClone("W");
+			if(Clone_R_Created && !Clone_R_Found)
+				SearchForClone("R");
+
+			if(Clone_W != null && (Clone_W_Tick < Environment.TickCount - 4000))
+			{
+				Clone_W = null;
+				Clone_W_Created = false;
+				Clone_W_Found = false;
+			}
+
+			if(Clone_R != null && (Clone_R_Tick < Environment.TickCount - 6000))
+			{
+				Clone_R = null;
+				Clone_R_Created = false;
+				Clone_R_Found = false;
+			}
 
 			if(G.Menu_IsKeyActive(t.MenuItem_key_TeamfightIsActive))
 				Combo();
@@ -120,18 +128,69 @@ namespace UltimateCarry
 			if(G.Menu_IsKeyActive(t.MenuItem_key_FarmIsActive))
 				Lasthit();
 
-			if(G.Menu_IsKeyActive(t.MenuItem_key_HarassIsActive))
+			if(G.Menu_IsKeyActive(t.MenuItem_key_HarassIsActive) )
 				Harass();
 
 			if(G.Menu_IsKeyActive(t.MenuItem_key_LaneclearIsActive))
 				LaneClear();
 		}
 
-		internal override void OnGameDraw(EventArgs args)
+		private static bool IsTeleportToClone(string Spell)
 		{
 
-			if(Clone != null && CloneTimer > Environment.TickCount - 4000)
-				Utility.DrawCircle(Clone.Position, 100, G.Menu_GetColor("color_Clone"));
+			if(Spell == "W")
+			{
+				if(ObjectManager.Player.Spellbook.GetSpell(SpellSlot.W).Name == "zedw2")
+					return true;
+			}
+			if(Spell == "R") 
+			{
+				if(ObjectManager.Player.Spellbook.GetSpell(SpellSlot.R).Name == "ZedR2")
+					return true;
+			}
+			return false;
+		}
+
+		private static void SearchForClone(string p)
+		{
+			if(p == "W")
+			{
+				var Shadow = ObjectManager.Get<Obj_AI_Minion>().FirstOrDefault(hero => (hero.Name == "Shadow" && hero.IsAlly && (hero != Clone_R)));
+				if(Shadow != null)
+				{
+					Clone_W = Shadow;
+					Clone_W_Found = true;
+					Clone_W_Tick = Environment.TickCount;
+				}
+			}
+			if(p == "R")
+			{
+				var Shadow = ObjectManager.Get<Obj_AI_Minion>().FirstOrDefault(hero => ((hero.ServerPosition.Distance(Clone_R_nearPosition)) < 50) && hero.Name == "Shadow" && hero.IsAlly && hero != Clone_W );
+				if(Shadow != null)
+				{
+					Clone_R = Shadow;
+					Clone_R_Found = true;
+					Clone_R_Tick = Environment.TickCount;
+				}
+			}
+		}
+
+		internal override void OnGameDraw(EventArgs args)
+		{
+			if(G.Menu_IsMenuActive(t.MenuItem_bool_DrawingActive))
+			{
+				if(Clone_W != null)
+				{
+					Utility.DrawCircle(Clone_W.ServerPosition, Q.Range, System.Drawing.Color.Aquamarine);
+					Utility.DrawCircle(Clone_W.ServerPosition, E.Range, System.Drawing.Color.Aquamarine);
+				}
+				if(Clone_R != null)
+				{
+					Utility.DrawCircle(Clone_R.ServerPosition, Q.Range, System.Drawing.Color.Aquamarine);
+					Utility.DrawCircle(Clone_R.ServerPosition, E.Range, System.Drawing.Color.Aquamarine);
+				}
+			}
+			G.Draw_RangeBasic(Q, null, E, R);
 		}
 
 		internal override void OnProcessPacket(EventArgs args)
@@ -146,133 +205,175 @@ namespace UltimateCarry
 		{
 		}
 
-		private static void Killsteal()
+		//private static void Killsteal()
+		//{
+		//	foreach(var hero in ObjectManager.Get<Obj_AI_Hero>().Where(hero => (hero.Distance(Clone.Position) < R.Range) && hero.IsValidTarget(30000) && hero.Health < DamageLib.getDmg(hero, DamageLib.SpellType.R) && G.Menu_IsMenuActive("use_R_KS")))
+		//		R.CastOnUnit(hero, G.Menu_IsMenuActive(t.MenuItem_bool_usePackets));
+		//}
+
+		private static bool IsEnoughEnergy(float energy)
 		{
-			foreach(var hero in ObjectManager.Get<Obj_AI_Hero>().Where(hero => (hero.Distance(Clone.Position) < R.Range) && hero.IsValidTarget(30000) && hero.Health < DamageLib.getDmg(hero, DamageLib.SpellType.R) && G.Menu_IsMenuActive("use_R_KS")))
-				R.CastOnUnit(hero, G.Menu_IsMenuActive(t.MenuItem_bool_usePackets));
+			if(energy <= ObjectManager.Player.Mana)
+				return true;
+			return false;
 		}
 
-		private static int GetEnergyForFullCombo()
+		private static float GetCost(SpellSlot Spell)
 		{
-			var EnergieNeeded = 0;
-			EnergieNeeded += (80 - (Q.Level * 5));
-			EnergieNeeded += (55 - (W.Level * 5));
-			EnergieNeeded += 50;
-			return EnergieNeeded;
+			return ObjectManager.Player.Spellbook.GetSpell(Spell).ManaCost;
 		}
 
 		private static void Combo()
 		{
-
-			if(R.IsReady() && ObjectManager.Player.Mana > GetEnergyForFullCombo() && G.Menu_IsMenuActive("use_R_Combo"))
+			if(G.Menu_IsMenuActive("use_R_Combo") && R.IsReady() && !IsTeleportToClone("R") && (IsEnoughEnergy(GetCost(SpellSlot.Q) + GetCost(SpellSlot.W)) ))
 			{
-				R_CheckTick = Environment.TickCount;
-				Target = SimpleTs.GetTarget(R.Range, SimpleTs.DamageType.Physical);  
-				if(Target != null)
-					R_Casttime = Environment.TickCount;
-				W_Casted = true;
+				Target = SimpleTs.GetTarget(R.Range, SimpleTs.DamageType.Physical);
+				if(Target != null) 
+					R.CastOnUnit(Target, G.Menu_IsMenuActive(t.MenuItem_bool_usePackets));
+			}
+
+			if (G.Menu_IsMenuActive("use_R_Combo") && R.IsReady() && !IsTeleportToClone("R") && (DamageLib.getDmg(Target, DamageLib.SpellType.R) > Target.Health))
 				R.CastOnUnit(Target, G.Menu_IsMenuActive(t.MenuItem_bool_usePackets));
-			}
-
-			if(W_CheckTick < Environment.TickCount - 200 && (R_Casttime < Environment.TickCount - 3000) && G.Menu_IsMenuActive("use_E_Combo") && !R.IsReady())
-			{
-				W_CheckTick = Environment.TickCount;
-				var CastClone = (W_Casttime < Environment.TickCount - 4000);
-				if(W.IsReady() && (Q.IsReady() || E.IsReady()))
-				{
-					Target = SimpleTs.GetTarget(W.Range + Q.Range - 50, SimpleTs.DamageType.Physical);
-					if(Target != null)
-						W.Cast(Target.Position, G.Menu_IsMenuActive(t.MenuItem_bool_usePackets));
-				}
-			}
-
-			if(R_CheckTick < Environment.TickCount - 200 && W_CheckTick < Environment.TickCount - 200 && (R_Casttime < Environment.TickCount - 3000) && W.IsReady() && W_Casted)
-			{
-				Target = SimpleTs.GetTarget(W.Range + 1200, SimpleTs.DamageType.Physical);
-				if(Target.Distance(ObjectManager.Player) < Target.Distance(Clone.Position))
-					W.Cast();
-			}
 
 			G.Spell_Cast_LineSkillshot(t.Menu_Teamfight, "use_Q_Combo", Q, SimpleTs.DamageType.Physical, "Enemy", !R.IsReady());
-
-
-			if(Clone != null && G.Menu_IsMenuActive("use_Q_Combo") && Q.IsReady())
-				foreach(var hero in ObjectManager.Get<Obj_AI_Hero>().Where(hero => (hero.Distance(Clone.Position) < Q.Range) && hero.IsValidTarget(30000)))
-					Q.Cast(hero.Position, G.Menu_IsMenuActive(t.MenuItem_bool_usePackets));
-
+			
+			if(G.Menu_IsMenuActive("use_W_Combo")  && !IsTeleportToClone("W"))
+			{
+				Target = SimpleTs.GetTarget(W.Range + Q.Range, SimpleTs.DamageType.Physical);
+				if(Target != null)
+				{
+					if((W.IsReady() && Q.IsReady() && Target.IsValidTarget(Q.Range + W.Range) && IsEnoughEnergy(GetCost(SpellSlot.Q) + GetCost(SpellSlot.W)))
+						|| (W.IsReady() && E.IsReady() && Target.IsValidTarget(W.Range + E.Range) && IsEnoughEnergy(GetCost(SpellSlot.W) + GetCost(SpellSlot.E)))
+						|| (W.IsReady() && Target.IsValidTarget(E.Range + Orbwalking.GetRealAutoAttackRange(Target))))
+					{
+						DelayTick = Environment.TickCount;
+						W.Cast(Target.Position, G.Menu_IsMenuActive(t.MenuItem_bool_usePackets));
+					}
+				}
+			}
 
 			if(G.Menu_IsMenuActive("use_E_Combo") && E.IsReady())
 			{
 				Target = SimpleTs.GetTarget(E.Range, SimpleTs.DamageType.Physical);
-				if(Target != null)
-					E.CastOnUnit(ObjectManager.Player);
+				{
+					if(Target != null)
+						E.Cast();
+				}
 			}
 
-			if(Clone != null && G.Menu_IsMenuActive("use_E_Combo") && E.IsReady())
-				foreach(var hero in ObjectManager.Get<Obj_AI_Hero>().Where(hero => (hero.Distance(Clone.Position) < E.Range) && hero.IsValidTarget(30000)))
-					E.CastOnUnit(ObjectManager.Player);
+
+			if(Clone_W != null && G.Menu_IsMenuActive("use_E_Combo") && E.IsReady())
+				foreach(var hero in ObjectManager.Get<Obj_AI_Hero>().Where(hero => (hero.Distance(Clone_W.Position) < E.Range) && hero.IsValidTarget() && hero.IsVisible))
+					E.Cast();
+
+			if(Clone_R != null && G.Menu_IsMenuActive("use_E_Combo") && E.IsReady())
+				foreach(var hero in ObjectManager.Get<Obj_AI_Hero>().Where(hero => (hero.Distance(Clone_R.Position) < E.Range) && hero.IsValidTarget() && hero.IsVisible))
+					E.Cast();
+
+			if ( G.Menu_IsMenuActive("use_Q_Combo") & (Clone_W != null ) && Q.IsReady())
+				foreach(var hero in ObjectManager.Get<Obj_AI_Hero>().Where(hero => (hero.Distance(Clone_W.Position) < Q.Range) && hero.IsValidTarget() && hero.IsVisible ))
+					Q.Cast(hero.Position, G.Menu_IsMenuActive(t.MenuItem_bool_usePackets));
+
+			if ( G.Menu_IsMenuActive("use_Q_Combo") & (Clone_R != null ) && Q.IsReady())
+				foreach(var hero in ObjectManager.Get<Obj_AI_Hero>().Where(hero => (hero.Distance(Clone_R.Position) < Q.Range) && hero.IsValidTarget() && hero.IsVisible ))
+					Q.Cast(hero.Position, G.Menu_IsMenuActive(t.MenuItem_bool_usePackets));
+			
+			if (G.Menu_IsMenuActive("use_W_Combo"))
+			{
+				Target = SimpleTs.GetTarget(E.Range , SimpleTs.DamageType.Physical); 
+				if (Target == null)
+				{
+					if(Clone_W != null)
+						foreach(var hero in ObjectManager.Get<Obj_AI_Hero>().Where(hero => (hero.Distance(Clone_W.Position) < E.Range) && hero.IsValidTarget() && hero.IsVisible))
+							W.Cast();
+					if(Clone_R != null)
+						foreach(var hero in ObjectManager.Get<Obj_AI_Hero>().Where(hero => (hero.Distance(Clone_R.Position) < E.Range) && hero.IsValidTarget() && hero.IsVisible))
+							W.Cast();
+				}
+			}
+
 		}
 
 		private static void Lasthit()
 		{
-
+			G.Spell_Cast_LineSkillshot(t.Menu_Farm, "use_Q_Farm", Q, SimpleTs.DamageType.Physical, "Minion", true, true);
 		}
 
 		private static void Harass()
 		{
 
-			if(W_CheckTick < Environment.TickCount - 200 && G.Menu_IsMenuActive("use_E_Harass"))
+			if(G.Menu_IsMenuActive("use_W_Harass") && !IsTeleportToClone("W") && Delay < Environment.TickCount - DelayTick)
 			{
-				W_CheckTick = Environment.TickCount;
-				var CastClone = (W_Casttime < Environment.TickCount - 4000);
-				if(!W_Casted && W.IsReady() && (Q.IsReady() || E.IsReady()))
-					foreach(var hero in ObjectManager.Get<Obj_AI_Hero>().Where(hero => (hero.Distance(ObjectManager.Player) < 1200) && hero.IsEnemy && !hero.IsDead))
-						if(!W_Casted)
-							W.Cast(hero.Position, G.Menu_IsMenuActive(t.MenuItem_bool_usePackets));
+				DelayTick = Environment.TickCount;
+				Target = SimpleTs.GetTarget(W.Range + Q.Range, SimpleTs.DamageType.Physical);
+				if(Target != null)
+				{
+					if((W.IsReady() && Q.IsReady() && Target.IsValidTarget(Q.Range + W.Range) && IsEnoughEnergy(GetCost(SpellSlot.Q) + GetCost(SpellSlot.W)))
+						|| (W.IsReady() && E.IsReady() && Target.IsValidTarget(W.Range + E.Range) && IsEnoughEnergy(GetCost(SpellSlot.W) + GetCost(SpellSlot.E)))
+						|| (W.IsReady() && Target.IsValidTarget(E.Range + Orbwalking.GetRealAutoAttackRange(Target))))
+					{
+						W.Cast(Target.Position, G.Menu_IsMenuActive(t.MenuItem_bool_usePackets)); 
+					}
+				}
 			}
-
-			G.Spell_Cast_LineSkillshot(t.Menu_Harass, "use_Q_Harass", Q, SimpleTs.DamageType.Physical, "Enemy");
-
-
-			if(Clone != null && G.Menu_IsMenuActive("use_Q_Harass") && Q.IsReady())
-				foreach(var hero in ObjectManager.Get<Obj_AI_Hero>().Where(hero => (hero.Distance(Clone.Position) < Q.Range) && hero.IsEnemy && !hero.IsDead))
-					Q.Cast(hero.Position, G.Menu_IsMenuActive(t.MenuItem_bool_usePackets));
 
 			if(G.Menu_IsMenuActive("use_E_Harass") && E.IsReady())
 			{
 				Target = SimpleTs.GetTarget(E.Range, SimpleTs.DamageType.Physical);
-				if(Target != null)
-					E.CastOnUnit(ObjectManager.Player);
+				{
+					if(Target != null)
+						E.Cast();
+				}
 			}
 
-			if(Clone != null && G.Menu_IsMenuActive("use_E_Harass") && E.IsReady())
-				foreach(var hero in ObjectManager.Get<Obj_AI_Hero>().Where(hero => (hero.Distance(Clone.Position) < E.Range) && hero.IsEnemy && !hero.IsDead))
-					E.CastOnUnit(ObjectManager.Player);
+			G.Spell_Cast_LineSkillshot(t.Menu_Teamfight, "use_Q_Harass", Q, SimpleTs.DamageType.Physical, "Enemy", !R.IsReady());
+
+			if(Clone_W != null && G.Menu_IsMenuActive("use_E_Harass") && E.IsReady())
+				foreach(var hero in ObjectManager.Get<Obj_AI_Hero>().Where(hero => (hero.Distance(Clone_W.Position) < E.Range) && hero.IsValidTarget() && hero.IsVisible))
+					E.Cast();
+
+			if(Clone_R != null && G.Menu_IsMenuActive("use_E_Harass") && E.IsReady())
+				foreach(var hero in ObjectManager.Get<Obj_AI_Hero>().Where(hero => (hero.Distance(Clone_R.Position) < E.Range) && hero.IsValidTarget() && hero.IsVisible))
+					E.Cast();
+
+			if(G.Menu_IsMenuActive("use_Q_Harass") & (Clone_W != null) && Q.IsReady())
+				foreach(var hero in ObjectManager.Get<Obj_AI_Hero>().Where(hero => (hero.Distance(Clone_W.Position) < Q.Range) && hero.IsValidTarget() && hero.IsVisible))
+					Q.Cast(hero.Position, G.Menu_IsMenuActive(t.MenuItem_bool_usePackets));
+
+			if(G.Menu_IsMenuActive("use_Q_Harass") & (Clone_R != null) && Q.IsReady())
+				foreach(var hero in ObjectManager.Get<Obj_AI_Hero>().Where(hero => (hero.Distance(Clone_R.Position) < Q.Range) && hero.IsValidTarget() && hero.IsVisible))
+					Q.Cast(hero.Position, G.Menu_IsMenuActive(t.MenuItem_bool_usePackets));
 
 		}
 
 		private static void LaneClear()
 		{
+			G.Spell_Cast_LineSkillshot(t.Menu_Farm, "use_Q_LaneClear_Enemy", Q, SimpleTs.DamageType.Physical, "Enemy");
+			G.Spell_Cast_LineSkillshot(t.Menu_Farm, "use_Q_LaneClear_Minion", Q, SimpleTs.DamageType.Physical, "Minion", true, true);
+			G.Spell_Cast_LineSkillshot(t.Menu_Farm, "use_Q_LaneClear_Minion", Q, SimpleTs.DamageType.Physical, "Minion", true);
+			
+			if(G.Menu_IsMenuActive("use_E_LaneClear_Enemy") && E.IsReady())
+			{
+				Target = SimpleTs.GetTarget(E.Range, SimpleTs.DamageType.Physical);
+				{
+					if(Target != null)
+						E.Cast();
+				}
+			}
 
+			if(G.Menu_IsMenuActive("use_E_LaneClear_Minion") && E.IsReady())
+			{
+				var allMinions = MinionManager.GetMinions(ObjectManager.Player.ServerPosition, E.Range, MinionTypes.All, MinionTeam.NotAlly);
+				foreach(var Minion in allMinions)
+				{
+					if(Minion != null)
+						if(Minion.IsValidTarget(E.Range))
+							if((DamageLib.getDmg(Minion, DamageLib.SpellType.E) > Minion.Health) || (DamageLib.getDmg(Minion, DamageLib.SpellType.E) + 100 < Minion.Health))
+								E.Cast();
+				}
+			}
 		}
 
-		// Jump NOT to Clone
-		//if(W_CheckTick < Environment.TickCount - 200)
-		//	{
-		//		W_CheckTick = Environment.TickCount; 
-		//		var CastClone = (W_Casttime < Environment.TickCount - 4000);
-		//		if(!W_Casted && W.IsReady() && (Q.IsReady() || E.IsReady()))
-		//			W.Cast(Game.CursorPos); 
-		//	}
-
-		// Jump to Clone
-		//if(W_CheckTick < Environment.TickCount - 200)
-		//	{
-		//		W_CheckTick = Environment.TickCount; 
-		//		var CastClone = (W_Casttime < Environment.TickCount - 4000);
-		//		if(W.IsReady() && (Q.IsReady() || E.IsReady()))
-		//			W.Cast(Game.CursorPos); 
-		//	}
 
 	}
 }
