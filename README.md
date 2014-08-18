@@ -6,7 +6,7 @@ UltimateCarry
 [Information Repo ](https://github.com/LXMedia1/Leage-Sharp)
 
 
-Includet Champions
+Included Champions
 ==================
 
 * Ezreal
