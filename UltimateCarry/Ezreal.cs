@@ -76,8 +76,8 @@ namespace UltimateCarry
 			R.Range  = Program.Menu.Item("maximum_R").GetValue<Slider>().Value;
 			R_min = Program.Menu.Item("minimum_R").GetValue<Slider>().Value;
 
-			if(G.Menu_IsMenuActive(t.MenuItem_bool_KillstealIsActive))
-				Killsteal();
+			//if(G.Menu_IsMenuActive(t.MenuItem_bool_KillstealIsActive))
+			//	Killsteal();
 
 			if(G.Menu_IsKeyActive(t.MenuItem_key_TeamfightIsActive))
 				Combo();

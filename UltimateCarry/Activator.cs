@@ -84,27 +84,22 @@ namespace UltimateCarry
 		{
 			if(Need_Health())
 			{
-				try
+				var ItemList = new List<Item>();
+				ItemList.Add(new Item(2003, "Health Potion", "1,2,3,4", "Neutral"));
+				ItemList.Add(new Item(2010, "Biscuit", "1,2,3,4", "Neutral"));
+				ItemList.Add(new Item(2041, "Crystalline Flask", "1,2,3", "Neutral"));
+
+				foreach(Item item in ItemList)
 				{
-					var ItemList = new List<Item>();
-					ItemList.Add(new Item(2003, "Health Potion", "1,2,3,4", "Neutral"));
-					ItemList.Add(new Item(2010, "Biscuit", "1,2,3,4", "Neutral"));
-					ItemList.Add(new Item(2041, "Crystalline Flask", "1,2,3", "Neutral"));
-					
-					foreach(Item item in ItemList)
-					{
-						if(item.isMap())
-							if(Items.CanUseItem(item.ID))
-								if(item.isEnabled())
-								{
-									Items.UseItem(item.ID);
-									return;
-								}
-					}
+					if(item.isMap())
+						if(Items.CanUseItem(item.ID))
+							if(item.isEnabled())
+							{
+								Items.UseItem(item.ID);
+								return;
+							}
 				}
-				catch
-				{
-				}
+
 			}
 			if(Need_Mana())
 			{
@@ -112,7 +107,7 @@ namespace UltimateCarry
 				ItemList.Add(new Item(2004, "Mana Potion", "1,2,3,4", "Neutral"));
 				ItemList.Add(new Item(2041, "Crystalline Flask", "1,2,3", "Neutral"));
 
-				foreach(Item item in ItemList) 
+				foreach(Item item in ItemList)
 				{
 					if(item.isMap())
 						if(Items.CanUseItem(item.ID))
@@ -127,7 +122,7 @@ namespace UltimateCarry
 
 		private static bool Need_Health()
 		{
-			if(!ObjectManager.Player.IsDead && ObjectManager.Player.Health < ObjectManager.Player.MaxHealth / 100 * 30)
+			if(!ObjectManager.Player.IsDead && ObjectManager.Player.Health < ObjectManager.Player.MaxHealth / 100 * 40)
 				return (!ObjectManager.Player.Buffs.Any(buff => buff.Name == "RegenerationPotion" || buff.Name == "ItemCrystalFlask" || buff.Name == "ItemMiniRegenPotion"));
 			return false;
 		}
@@ -242,7 +237,8 @@ namespace UltimateCarry
 					if(Items.CanUseItem(Item.ID))
 						if(Item.isEnabled())
 							if(targ != null)
-								Items.UseItem(Item.ID, targ);
+								if((targ.MaxHealth / 100 * 10) > (ObjectManager.Player.MaxHealth - ObjectManager.Player.Health))
+									Items.UseItem(Item.ID, targ);
 			}
 			catch
 			{
@@ -253,6 +249,7 @@ namespace UltimateCarry
 		{
 			try
 			{
+				// remove deathmark from zed 
 				var ItemList = new List<Item>();
 				ItemList.Add(new Item(3139, "Mercurial Scimitar", "1,4", "Defensive"));
 				ItemList.Add(new Item(3137, "Dervish Blade", "2,3", "Defensive"));
@@ -279,6 +276,7 @@ namespace UltimateCarry
 		{
 			try
 			{
+				// remove deathmark from zed 
 				var Item = new Item(3222, "Mikael's Crucible", "1,2,3,4", "Defensive", 750); // 
 				var Friend = ObjectManager.Get<Obj_AI_Hero>().First(Hero => Hero.IsAlly && !Hero.IsDead && (Hero.HasBuffOfType(BuffType.Snare) || Hero.HasBuffOfType(BuffType.Stun)) && Hero.Distance(ObjectManager.Player) <= Item.Range && Items.CanUseItem(Item.ID) && Item.isMap() && Item.isEnabled());
 				if(Friend != null)
