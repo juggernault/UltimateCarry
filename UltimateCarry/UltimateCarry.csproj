@@ -35,11 +35,14 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Activator.cs" />
     <Compile Include="Champ.cs" />
+    <Compile Include="Chat.cs" />
     <Compile Include="DemoChamp.cs" />
     <Compile Include="Ezreal.cs" />
     <Compile Include="G.cs" />
     <Compile Include="Gnar.cs" />
+    <Compile Include="Item.cs" />
     <Compile Include="Lucian.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -144,9 +144,40 @@ namespace UltimateCarry
 
 			Program.Menu.AddSubMenu(new Menu(t.Menu_Drawing_text, t.Menu_Drawing));
 			Program.Menu.SubMenu(t.Menu_Drawing).AddItem(new MenuItem(t.MenuItem_bool_DrawingActive, t.MenuItem_bool_DrawingActive_text).SetValue(true));
+			
+			Program.Menu.AddSubMenu(new Menu("Supported Items", "supportedextras"));
+			Program.Menu.SubMenu("supportedextras").AddSubMenu(new Menu("Active", "ItemsActive"));
+			Program.Menu.SubMenu("supportedextras").AddSubMenu(new Menu("Defensive", "ItemsDefensive"));
+			Program.Menu.SubMenu("supportedextras").AddSubMenu(new Menu("Neutral", "ItemsNeutral"));
 
+			foreach(Item item in GetallItems())
+			{
+				if(item.isMap() == true)
+					Program.Menu.SubMenu("supportedextras").SubMenu("Items" + item.Modestring).AddItem(new MenuItem("Item" + item.ID.ToString() + item.Modestring, item.Name).SetValue(true));
+			}
 		}
 
+		private static List<Item> GetallItems()
+		{
+			var list = new List<Item>();
+			list.Add(new Item(3139, "Mercurial Scimitar", "1,4", "Defensive"));
+			list.Add(new Item(3137, "Dervish Blade", "2,3", "Defensive"));
+			list.Add(new Item(3140, "Quicksilver Sash", "1,2,3,4", "Defensive"));
+			list.Add(new Item(3222, "Mikael's Crucible", "1,2,3,4", "Defensive", 750));
+			list.Add(new Item(3146, "Hextech Gunblade", "1,2,3,4", "Active"));
+			list.Add(new Item(3074, "Ravenous Hydra", "1,2,3,4", "Active"));
+			list.Add(new Item(3077, "Tiamat", "1,2,3,4", "Active"));
+			list.Add(new Item(3144, "Bilgewater Cutlass", "1,2,3,4", "Active", 450));
+			list.Add(new Item(3128, "Deathfire Grasp", "1,4", "Active", 750));
+			list.Add(new Item(3153, "Blade of the Ruined King", "1,2,3,4", "Active", 450));
+			list.Add(new Item(2041, "Crystalline Flask", "1,2,3", "Neutral"));
+			list.Add(new Item(2004, "Health Potion", "1,2,3,4", "Neutral"));
+			list.Add(new Item(2010, "Biscuit", "1,2,3,4", "Neutral"));
+
+			return list;
+		}
+
+		
 		#endregion
 
 		#region Player

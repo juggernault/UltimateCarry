@@ -32,7 +32,7 @@ namespace UltimateCarry
 
 		private static void UpdateCheck()
 		{
-			G.Chat_WriteLocal("UltimateCarry by Lexxer loading ...", "#33FFFF");
+			Chat.Write("UltimateCarry by Lexxes loading ...", "#33FFFF");
 			var bgw = new BackgroundWorker();
 			bgw.DoWork += bgw_DoWork;
 			bgw.RunWorkerAsync();
@@ -44,16 +44,16 @@ namespace UltimateCarry
 					"https://github.com/LXMedia1/Leage-Sharp/raw/master/UltimateCarry.exe", localversion);
 			if(myUpdater.NeedUpdate)
 			{
-				G.Chat_WriteLocal("UltimateCarry is Updateing ...", "#33FFFF");
-				G.Chat_WriteLocal("-- Using trellis Updater --", "#33FFFF");
+				Chat.Write("UltimateCarry is Updateing ...", "#33FFFF");
+				Chat.Write("-- Using trellis Updater --", "#33FFFF");
 				if(myUpdater.Update())
 				{
-					G.Chat_WriteLocal("UltimateCarry is Updateed, Reload Please.", "#33FFFF");
+					Chat.Write("UltimateCarry is Updateed, Reload Please.", "#33FFFF");
 				}
 			}
 			else
 			{
-				G.Chat_WriteLocal(string.Format("UltimateCarry ( Version: {0} ) loaded!",localversion), "#33FFFF");
+				Chat.Write(string.Format("UltimateCarry ( Version: {0} ) loaded!", localversion), "#33FFFF");
 			}
 		}
 	}
@@ -94,7 +94,7 @@ namespace UltimateCarry
 			}
 			catch(Exception ex)
 			{
-				G.Chat_WriteLocal("UltimateCarry-Updater Error: " + ex.Message, "#33FFFF");
+				Chat.Write("UltimateCarry-Updater Error: " + ex.Message, "#33FFFF");
 				return false;
 			}
 		}

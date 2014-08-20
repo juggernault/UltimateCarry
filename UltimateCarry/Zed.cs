@@ -35,7 +35,7 @@ namespace UltimateCarry
 
 		public static Vector3 Clone_R_nearPosition;
 
-		public static int Delay = 100;
+		public static int Delay = 300;
 		public static int DelayTick = 0;
 
 		public static Spell Q;
@@ -191,18 +191,6 @@ namespace UltimateCarry
 				}
 			}
 			G.Draw_RangeBasic(Q, null, E, R);
-		}
-
-		internal override void OnProcessPacket(EventArgs args)
-		{
-		}
-
-		internal override void OnSendPacket(EventArgs args)
-		{
-		}
-
-		internal override void OnGameInput(EventArgs args)
-		{
 		}
 
 		//private static void Killsteal()

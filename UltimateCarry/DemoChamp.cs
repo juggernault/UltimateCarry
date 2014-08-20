@@ -53,17 +53,5 @@ namespace UltimateCarry
 		internal override void OnGameDraw(EventArgs args)
 		{
 		}
-
-		internal override void OnProcessPacket(EventArgs args)
-		{
-		}
-
-		internal override void OnSendPacket(EventArgs args)
-		{
-		}
-
-		internal override void OnGameInput(EventArgs args)
-		{
-		}
 	}
 }

@@ -64,34 +64,17 @@ namespace UltimateCarry
 
 			Drawing.OnDraw += Drawing_OnDraw;
 			Game.OnGameUpdate += Game_OnGameUpdate;
-			Game.OnGameProcessPacket += Game_OnProcessPacket;
-			Game.OnGameSendPacket += Game_OnSendPacket;
-			Game.OnGameInput += Game_OnGameInput;
 		}
 
 		private static void Game_OnGameUpdate(EventArgs args)
 		{
+			Activator.OnGameUpdate(args);
 			Champ.OnGameUpdate(args);
 		}
 
 		private static void Drawing_OnDraw(EventArgs args)
 		{
 			Champ.OnGameDraw(args);
-		}
-
-		private static void Game_OnProcessPacket(EventArgs args)
-		{
-			Champ.OnProcessPacket(args);
-		}
-
-		private static void Game_OnSendPacket(EventArgs args)
-		{
-			Champ.OnSendPacket(args);
-		}
-
-		private static void Game_OnGameInput(EventArgs args)
-		{
-			Champ.OnGameInput(args);
 		}
 
 		

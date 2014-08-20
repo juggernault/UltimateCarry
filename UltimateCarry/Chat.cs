@@ -19,20 +19,11 @@ using System.Threading.Tasks;
 
 namespace UltimateCarry
 {
-	class Champ
+	class Chat
 	{
-		public string Id = "";
-
-		public virtual void Menu()
+		public static void Write(string Message, string Color = "#33FFFF")
 		{
-		}
-
-		internal virtual void OnGameUpdate(EventArgs args)
-		{
-		}
-
-		internal virtual void OnGameDraw(EventArgs args)
-		{
+			Game.PrintChat("<font color='{0}'>{1}</font>", Color, Message);
 		}
 
 	}

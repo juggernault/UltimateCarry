@@ -150,18 +150,6 @@ namespace UltimateCarry
 			G.Draw_RangeBasic(Q_mini, W_mega, E_mini, R_mega );
 		}
 
-		internal override void OnProcessPacket(EventArgs args)
-		{
-		}
-
-		internal override void OnSendPacket(EventArgs args)
-		{
-		}
-
-		internal override void OnGameInput(EventArgs args)
-		{
-		}
-
 		private static void Killsteal()
 		{
 			foreach(var hero in ObjectManager.Get<Obj_AI_Hero>().Where(hero => (hero.IsValidTarget(20000))))

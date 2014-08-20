@@ -97,34 +97,23 @@ namespace UltimateCarry
 			G.Draw_RangeBasic(Q, W, E, null);
 		}
 
-		internal override void OnProcessPacket(EventArgs args)
-		{
-		}
-
-		internal override void OnSendPacket(EventArgs args)
-		{
-		}
-
-		internal override void OnGameInput(EventArgs args)
-		{
-		}
-
 		private static void Killsteal()
 		{
-			foreach(var hero in ObjectManager.Get<Obj_AI_Hero>().Where(hero => (hero.IsValidTarget(20000))))
-			{
-				if (G.Spell_CanKill_Percent(hero,Q,DamageLib.SpellType.Q,95,true) && G.Menu_IsMenuActive("use_Q_KS"))
-					Q.Cast(hero, G.Menu_IsMenuActive(t.MenuItem_bool_usePackets));
+			var KillTarget = ObjectManager.Get<Obj_AI_Hero>().First(Hero => Hero.IsValidTarget(Q.Range) && Q.GetPrediction(Hero).HitChance >= Prediction.HitChance.HighHitchance && Q.IsReady() && Hero.Health < DamageLib.getDmg(Hero, DamageLib.SpellType.Q));
+			if(KillTarget != null)
+				Q.Cast(KillTarget, G.Menu_IsMenuActive(t.MenuItem_bool_usePackets));
 
-				if(G.Spell_CanKill_Percent(hero, W, DamageLib.SpellType.W, 95, true) && G.Menu_IsMenuActive("use_W_KS"))
-					W.Cast(hero, G.Menu_IsMenuActive(t.MenuItem_bool_usePackets));
+			KillTarget = ObjectManager.Get<Obj_AI_Hero>().First(Hero => Hero.IsValidTarget(W.Range) && Q.GetPrediction(Hero).HitChance >= Prediction.HitChance.HighHitchance && W.IsReady() && Hero.Health < DamageLib.getDmg(Hero, DamageLib.SpellType.W));
+			if(KillTarget != null)
+				W.Cast(KillTarget, G.Menu_IsMenuActive(t.MenuItem_bool_usePackets));
 
-				if(G.Spell_CanKill_Percent(hero, E, DamageLib.SpellType.E, 95, true) && G.Menu_IsMenuActive("use_E_KS"))
-					E.Cast(hero, G.Menu_IsMenuActive(t.MenuItem_bool_usePackets));
+			KillTarget = ObjectManager.Get<Obj_AI_Hero>().First(Hero => Hero.IsValidTarget(E.Range) && Q.GetPrediction(Hero).HitChance >= Prediction.HitChance.HighHitchance && E.IsReady() && Hero.Health < DamageLib.getDmg(Hero, DamageLib.SpellType.E));
+			if(KillTarget != null)
+				E.Cast(KillTarget, G.Menu_IsMenuActive(t.MenuItem_bool_usePackets));
 
-				if(G.Spell_CanKill_Percent(hero, R, DamageLib.SpellType.R, 95, true, (hero.Distance(ObjectManager.Player) > R_min)) && G.Menu_IsMenuActive("use_R_KS"))
-					R.Cast(hero, G.Menu_IsMenuActive(t.MenuItem_bool_usePackets));
-			}
+			KillTarget = ObjectManager.Get<Obj_AI_Hero>().First(Hero => Hero.IsValidTarget(R.Range) && Q.GetPrediction(Hero).HitChance >= Prediction.HitChance.HighHitchance && R.IsReady() && Hero.Health < DamageLib.getDmg(Hero, DamageLib.SpellType.R));
+			if(KillTarget != null)
+				R.Cast(KillTarget, G.Menu_IsMenuActive(t.MenuItem_bool_usePackets));
 		}
 
 		private static void Combo()
