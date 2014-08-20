@@ -93,9 +93,6 @@ namespace UltimateCarry
 			if(R_Active)
 				return;
 
-			if(G.Menu_IsMenuActive(t.MenuItem_bool_KillstealIsActive))
-				Killsteal();
-
 			if(G.Menu_IsKeyActive(t.MenuItem_key_TeamfightIsActive))
 				Combo();
 
@@ -105,28 +102,42 @@ namespace UltimateCarry
 			if(G.Menu_IsKeyActive(t.MenuItem_key_HarassIsActive))
 				Harass();
 
-			if(G.Menu_IsKeyActive(t.MenuItem_key_LaneclearIsActive))
+			if(G.Menu_IsKeyActive(t.MenuItem_key_LaneclearIsActive)) 
 				LaneClear();
+
+			//if(G.Menu_IsMenuActive(t.MenuItem_bool_KillstealIsActive))
+			//	Killsteal();
 		}
 
 		internal override void OnGameDraw(EventArgs args)
 		{
-			G.Draw_RangeBasic(Q, W, E, R);
+			G.Draw_RangeBasic(Q, W, E, R); 
 		}
 
-		private static void Killsteal()
+		private static void Killsteal() 
 		{
-			var KillTarget = ObjectManager.Get<Obj_AI_Hero>().First(Hero => Hero.IsValidTarget(Q.Range) && Q.GetPrediction(Hero).HitChance >= Prediction.HitChance.HighHitchance && Q.IsReady() && Hero.Health < DamageLib.getDmg(Hero, DamageLib.SpellType.Q));
-			if(KillTarget != null)
-				Cast_Speazial_Q("Enemy", KillTarget);
 
-			KillTarget = ObjectManager.Get<Obj_AI_Hero>().First(Hero => Hero.IsValidTarget(W.Range) && Q.GetPrediction(Hero).HitChance >= Prediction.HitChance.HighHitchance && W.IsReady() && Hero.Health < DamageLib.getDmg(Hero, DamageLib.SpellType.W));
-			if(KillTarget != null)
-				W.Cast(KillTarget, G.Menu_IsMenuActive(t.MenuItem_bool_usePackets));
 
-			KillTarget = ObjectManager.Get<Obj_AI_Hero>().First(Hero => Hero.IsValidTarget(R.Range) && Q.GetPrediction(Hero).HitChance >= Prediction.HitChance.HighHitchance && R.IsReady() && Hero.Health < DamageLib.getDmg(Hero, DamageLib.SpellType.R));
-			if(KillTarget != null)
-				R.Cast(KillTarget, G.Menu_IsMenuActive(t.MenuItem_bool_usePackets));
+			//var KillTarget = ObjectManager.Get<Obj_AI_Hero>().First(Hero => Hero.IsValidTarget(Q.Range) && Q.GetPrediction(Hero).HitChance >= Prediction.HitChance.HighHitchance && Q.IsReady() && Hero.Health < DamageLib.getDmg(Hero, DamageLib.SpellType.Q));
+			//if(KillTarget != null)
+			//{
+			//	Chat.Write("MYDmgQ: " + DamageLib.getDmg(KillTarget, DamageLib.SpellType.Q).ToString() + " hislife: " + KillTarget.Health.ToString());
+			//	Cast_Speazial_Q("Enemy", KillTarget); 
+			//}
+			//var KillTarget = ObjectManager.Get<Obj_AI_Hero>().First(Hero => Hero.IsValidTarget(W.Range) && Q.GetPrediction(Hero).HitChance >= Prediction.HitChance.HighHitchance && W.IsReady() && Hero.Health < DamageLib.getDmg(Hero, DamageLib.SpellType.W));
+			//if(KillTarget != null)
+			//{
+			//	Chat.Write("MYDmgW: " + DamageLib.getDmg(KillTarget, DamageLib.SpellType.W).ToString() + " hislife: " + KillTarget.Health.ToString());
+
+			//	W.Cast(KillTarget, G.Menu_IsMenuActive(t.MenuItem_bool_usePackets));
+			//	UsedSkill();
+			//}
+			//KillTarget = ObjectManager.Get<Obj_AI_Hero>().First(Hero => Hero.IsValidTarget(R.Range) && Q.GetPrediction(Hero).HitChance >= Prediction.HitChance.HighHitchance && R.IsReady() && Hero.Health < DamageLib.getDmg(Hero, DamageLib.SpellType.R));
+			//if(KillTarget != null)
+			//{
+			//	R.Cast(KillTarget, G.Menu_IsMenuActive(t.MenuItem_bool_usePackets));
+			//	UsedSkill();
+			//}
 		}
 		
 		private static void Combo()
@@ -154,7 +165,7 @@ namespace UltimateCarry
 
 		}
 
-		private static void LaneClear()
+		private static void LaneClear() 
 		{
 			if(G.Spell_Cast_onMousePos(t.Menu_Laneclear, "use_E_LaneClear_Enemy", E, SimpleTs.DamageType.Magical, E_useRange, "Enemy", CanUseSpells))
 				UsedSkill();

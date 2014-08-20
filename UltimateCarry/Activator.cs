@@ -28,12 +28,44 @@ namespace UltimateCarry
 		{
 			if(Delaytick <= Environment.TickCount - 250)
 			{
+				Check_Summoners();
 				Check_Potions();
 				Check_Active_Items();
 				Check_AntiStun_Me();
 				Check_AntiStun_Friend();
 				Delaytick = Environment.TickCount;
 			}
+		}
+
+		private static void Check_Summoners()
+		{
+			var SumBarrier = Utility.GetSpellSlot(ObjectManager.Player, "SummonerBarrier");
+			if(SumBarrier != SpellSlot.Unknown && ObjectManager.Player.SummonerSpellbook.CanUseSpell(SumBarrier) == SpellState.Ready)
+			{
+				if(ObjectManager.Player.Health < ObjectManager.Player.MaxHealth / 100 * 10)
+					ObjectManager.Player.SummonerSpellbook.CastSpell(SumBarrier);
+			}
+
+			var SumHeal = Utility.GetSpellSlot(ObjectManager.Player, "SummonerHeal");
+			if(SumHeal != SpellSlot.Unknown && ObjectManager.Player.SummonerSpellbook.CanUseSpell(SumHeal) == SpellState.Ready)
+			{
+				if(ObjectManager.Player.Health < ObjectManager.Player.MaxHealth / 100 * 10)
+					ObjectManager.Player.SummonerSpellbook.CastSpell(SumHeal);
+			}
+			//var SumExhoust = Utility.GetSpellSlot(ObjectManager.Player, "SummonerExhaust");
+			//if(SumExhoust != SpellSlot.Unknown && ObjectManager.Player.SummonerSpellbook.CanUseSpell(SumExhoust) == SpellState.Ready)
+			//{
+			//	if (G.Menu_IsKeyActive(t.MenuItem_key_TeamfightIsActive))
+			//	{
+			//		var MostdmgHerodmg = 0;
+			//		var Obj_AI_Hero MostdmgHero;
+			//		foreach (Obj_AI_Hero hero in ObjectManager.Get<Obj_AI_Hero>().Where( hero => hero.IsValidTarget(550 + 100)
+			//		{
+			//			if (MostdmgHerodmg < hero.BaseAttackDamage + hero.BaseAbilityDamage)
+			//				MostdmgHerodmg = hero.
+			//		}
+			//	}
+			//}
 		}
 
 		private static void Check_Active_Items()
